@@ -1,0 +1,26 @@
+{
+  "status": "frozen_by_user",
+  "recorded_utc": "2026-11-09T15:32:58.853912+00:00",
+  "instruction": "Keep current corrected method. Continue existing experiments without changing design or hyperparameters.",
+  "primary_odsr_method": "native_topology_full",
+  "namespace": "odsr_native_topology_v1",
+  "egcl_adaptation": "native_topology",
+  "odsr_settings": {
+    "epochs": 5,
+    "lr": 0.0001,
+    "weight_mix": 0.25,
+    "correction_relative_step": 0.001,
+    "probe_size": 1024,
+    "reset_seed_offset": 710000
+  },
+  "earlier_method": "ours is historical, not the current proposed method",
+  "ablations": "Separate diagnostic variants, not replacements for the frozen full method",
+  "sha256": {
+    "scripts/run_odsr_native_topology.py": "a43987832f7fdd96910db40a293e1a1c795a8b525a469ed854fe6d07f7feb21f",
+    "src/social_unlearning/odsr_native_topology.py": "07920479842f7eaf93c379919be943e99c9a1483ea410b910ff1c1c7ffe1b4ea",
+    "src/social_unlearning/isolated_reset.py": "6ec512a3623c0b7555f940af2fc0a4121e72802537e67c016b380912335d04ac",
+    "scripts/run_controlled_odsr_native_topology.py": "9f1e5d8398208bcd336af3630bf7a2e14f1b77fa1353d726774be0b84a61c731",
+    "src/social_unlearning/egcl_unlearning_adapters.py": "35e5b5ef2cd6424889cd4c243eceeb0f2b8445147fd6f43bc78abb18cf153804",
+    "scripts/run_egcl_unlearning_adapters.py": "c30a63eed60c3d54c7e8f15ada754b73753cb34fc988c8b089989ce162485900"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "ODSR": {
+    "url": "https://github.com/Rongfeng-Guo/ODSR-KDD-2026.git",
+    "commit": "5acd95a97afdc2d2a19536a3ccf41086d3b03c05",
+    "path": "external/ODSR",
+    "bundled": [
+      "ODSR.py",
+      "common.py",
+      "LICENSE"
+    ]
+  },
+  "EGCL": {
+    "url": "https://github.com/wubinzzu/EGCL.git",
+    "commit": "1247468e470a09540a011881db4f1e74c411161e",
+    "path": "external/EGCL"
+  },
+  "GNNDelete": {
+    "url": "https://github.com/mims-harvard/GNNDelete.git",
+    "commit": "d5a79daca22d239745d80048e8a5083b031410b5",
+    "path": "external/baseline_sources/GNNDelete"
+  },
+  "DA2Unlearn": {
+    "url": "https://gitlab.com/hcdou/da2unl.git",
+    "commit": "1965ffab6397051963fc360213060ab39a86d1b9",
+    "path": "external/baseline_sources/DA2Unlearn"
+  }
+}
