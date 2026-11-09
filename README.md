@@ -63,10 +63,10 @@ For one dataset and seed:
 
 ```bash
 python scripts/reproduce.py --backbone ODSR --datasets epinions --seeds 42 \
-  --methods retrain graph_only retain_finetune sorecremover --device cuda:0
+  --methods retraining graph_pruning retain_finetuning sorecremover --device cuda:0
 ```
 
-`sorecremover` maps to `run_odsr_native_topology.py --variant full` for ODSR and `run_egcl_unlearning_adapters.py --method native_topology` for EGCL. Internal filenames are preserved to retain source hashes. The historical `--method ours` in `run_edge_user_odsr.py` is an earlier method and **must not be labeled SoRecRemover**.
+Use `scripts/run_sorecremover.py --backbone ODSR` or `--backbone EGCL` for the current method. The named commands are listed in [code names](docs/CODE_NAMES.md). They call the frozen implementations, preserving source hashes and checkpoint compatibility. The historical `--method ours` is an earlier method and **must not be labeled SoRecRemover**.
 
 ## Deletion sweeps and ablations
 
@@ -82,6 +82,22 @@ python scripts/reproduce.py --backbone ODSR --datasets epinions \
 ```
 
 The runner includes the scratch reference even if only `sorecremover` is selected. The EGCL comparison currently supports 1% deletion; its control runner does not implement a multi-fraction sweep. See [reproduction details](docs/REPRODUCING.md) for individual commands and membership-inference evaluation.
+
+## Code names
+
+| Component | Runnable file |
+| --- | --- |
+| ODSR backbone | `scripts/train_odsr.py` |
+| EGCL backbone | `scripts/train_egcl.py` |
+| SoRecRemover (current method) | `scripts/run_sorecremover.py` |
+| SCIF | `scripts/run_scif.py` |
+| GNNDelete | `scripts/run_gnndelete.py` |
+| DA2Unlearn | `scripts/run_da2unlearn.py` |
+| Scratch retraining | `scripts/run_retraining.py` |
+| Graph pruning | `scripts/run_graph_pruning.py` |
+| Retained fine-tuning | `scripts/run_retain_finetuning.py` |
+
+Each method command accepts `--backbone`, `--dataset`, `--seed`, `--fraction`, and `--device`. SCIF and DA2Unlearn currently support ODSR only. Use `--help` for options or `--dry-run` to inspect the implementation invoked.
 
 ## Included comparisons
 

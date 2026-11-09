@@ -5,25 +5,25 @@ Run from the repository root after installation and dependency/data preparation.
 ## ODSR: one request
 
 ```bash
-python scripts/train_original.py --backbone ODSR --dataset epinions --seed 42 --device cuda:0
-python scripts/run_edge_user_odsr.py --dataset epinions --seed 42 --fraction .01 --method retrain --device cuda:0
-python scripts/run_odsr_native_topology.py --dataset epinions --seed 42 --fraction .01 --variant full --device cuda:0
+python scripts/train_odsr.py --dataset epinions --seed 42 --device cuda:0
+python scripts/run_retraining.py --backbone ODSR --dataset epinions --seed 42 --fraction .01 --device cuda:0
+python scripts/run_sorecremover.py --backbone ODSR --dataset epinions --seed 42 --fraction .01 --variant full --device cuda:0
 ```
 
-Then run `graph_only`, `retain_finetune`, `scif`, `gnndelete`, or `da2` using `run_edge_user_odsr.py --method METHOD`. Always produce the matching retrain checkpoint first. Use the exact same fraction and seed. To reproduce all three seeds and both datasets, use `scripts/reproduce.py` as shown in the README.
+Then run `run_graph_pruning.py`, `run_retain_finetuning.py`, `run_scif.py`, `run_gnndelete.py`, or `run_da2unlearn.py` with `--backbone ODSR`. Always produce the matching retrain checkpoint first. Use the exact same fraction and seed. To reproduce all three seeds and both datasets, use `scripts/reproduce.py` as shown in the README.
 
-`train_original.py` invokes the shared original training routine with no deletion requests. Directly executing the older `run_unlearning.py` also runs historical compact-row deletion experiments; use the new wrapper for the current study.
+`train_odsr.py` invokes the shared original training routine with no deletion requests. Directly executing the older `run_unlearning.py` also runs historical compact-row deletion experiments; use the new wrapper for the current study.
 
 ## EGCL: one request
 
 ```bash
-python scripts/train_original.py --backbone EGCL --dataset epinions --seed 42 --device cuda:0
-python scripts/run_egcl_edge_controls.py --dataset epinions --seed 42 --method retrain --device cuda:0
-python scripts/run_egcl_unlearning_adapters.py --dataset epinions --seed 42 --method native_topology --device cuda:0
-python scripts/run_egcl_unlearning_adapters.py --dataset epinions --seed 42 --method gnndelete_native --device cuda:0
+python scripts/train_egcl.py --dataset epinions --seed 42 --device cuda:0
+python scripts/run_retraining.py --backbone EGCL --dataset epinions --seed 42 --device cuda:0
+python scripts/run_sorecremover.py --backbone EGCL --dataset epinions --seed 42 --device cuda:0
+python scripts/run_gnndelete.py --backbone EGCL --dataset epinions --seed 42 --device cuda:0
 ```
 
-EGCL edge controls are fixed to 1% deletion. The original cap is 2,000 epochs with validation selection and early stopping, rather than 2,000 guaranteed epochs. `train_original.py --epochs N` is only for a separate pilot checkout: a changed epoch budget intentionally invalidates existing provenance-compatible caches.
+EGCL edge controls are fixed to 1% deletion. The original cap is 2,000 epochs with validation selection and early stopping, rather than 2,000 guaranteed epochs. `train_egcl.py --epochs N` is only for a separate pilot checkout: a changed epoch budget intentionally invalidates existing provenance-compatible caches.
 
 ## Controlled membership inference
 

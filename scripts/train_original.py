@@ -3,14 +3,19 @@ import argparse
 from types import SimpleNamespace
 
 
-def main():
+def main(backbone=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--backbone', choices=['ODSR', 'EGCL'], required=True)
+    if backbone is None:
+        parser.add_argument('--backbone', choices=['ODSR', 'EGCL'], required=True)
+    else:
+        parser.set_defaults(backbone=backbone)
     parser.add_argument('--dataset', choices=['epinions', 'yelp2018'], required=True)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--epochs', type=int, help='Override only for pilots; omit for the frozen recipe')
     args = parser.parse_args()
+    if args.epochs is not None and args.epochs < 1:
+        parser.error('--epochs must be positive')
     if args.backbone == 'ODSR':
         from run_unlearning import run
         run(SimpleNamespace(dataset=args.dataset, seed=args.seed, device=args.device,

@@ -40,14 +40,9 @@ def main():
         common = ['--dataset', 'epinions', '--seed', '42', '--device', a.device]
         commands = []
         for backbone in ['ODSR', 'EGCL']:
-            commands.append(['scripts/train_original.py', '--backbone', backbone, '--epochs', '2', *common])
-            control = 'scripts/run_edge_user_odsr.py' if backbone == 'ODSR' else 'scripts/run_egcl_edge_controls.py'
-            for method in ['retrain', 'graph_only', 'retain_finetune']:
-                commands.append([control, *common, '--method', method])
-            if backbone == 'ODSR':
-                commands.append(['scripts/run_odsr_native_topology.py', *common, '--variant', 'full'])
-            else:
-                commands.append(['scripts/run_egcl_unlearning_adapters.py', *common, '--method', 'native_topology'])
+            commands.append([f'scripts/train_{backbone.lower()}.py', '--epochs', '2', *common])
+            for method in ['retraining', 'graph_pruning', 'retain_finetuning', 'sorecremover']:
+                commands.append([f'scripts/run_{method}.py', '--backbone', backbone, *common])
         for command in commands:
             print('RUN', ' '.join(command), flush=True)
             result = subprocess.run([sys.executable, '-u', *command], cwd=root, capture_output=True, text=True)

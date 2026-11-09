@@ -6,7 +6,7 @@ User deletion removes all user-item interactions and both incoming and outgoing 
 
 ## ODSR SoRecRemover
 
-The implementation is `scripts/run_odsr_native_topology.py`, supported by `src/social_unlearning/odsr_native_topology.py` and `isolated_reset.py`.
+The public command is `scripts/run_sorecremover.py --backbone ODSR`. Its frozen implementation is `scripts/run_odsr_native_topology.py`, supported by `src/social_unlearning/odsr_native_topology.py` and `isolated_reset.py`.
 
 A paired probe samples at most 1,024 original training interactions without replacement. It reuses negatives and compares evaluation-mode native-loss gradients at identical parameters on the original graph and the altered graph's retained probe. The difference is normalized to a displacement of 0.001 times the relevant parameter norm. Requested embedding rows are excluded from this correction and reset independently with a fixed seed offset of 710000. Sensitivity weights are then computed once, with a mixture coefficient of 0.25. Five retained-training epochs use learning rate 0.0001 and native recommendation/contrastive losses; retained validation Recall@20 selects the checkpoint.
 
@@ -16,7 +16,7 @@ Ablations remove correction (`no_topology`), replace weights by ones (`uniform_w
 
 ## EGCL adaptation
 
-`scripts/run_egcl_unlearning_adapters.py --method native_topology` performs a native-objective topology correction and retained recovery using the EGCL port. EGCL preserves full candidate denominators in contrastive losses. Unlike ODSR, an isolated requested user has zero propagated output under the current EGCL aggregation. Native zero-row observations cannot by themselves establish removal of influence from shared item embeddings or parameters.
+`scripts/run_sorecremover.py --backbone EGCL` performs a native-objective topology correction and retained recovery using the EGCL port. EGCL preserves full candidate denominators in contrastive losses. Unlike ODSR, an isolated requested user has zero propagated output under the current EGCL aggregation. Native zero-row observations cannot by themselves establish removal of influence from shared item embeddings or parameters.
 
 ## Evaluation contract
 
