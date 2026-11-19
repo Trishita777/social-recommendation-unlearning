@@ -1,10 +1,36 @@
 # SoRecRemover
 
-Research code for **SoRecRemover**, an empirical unlearning method for social recommendation, with ODSR and EGCL backbones. The repository name is `social-recommendation-unlearning`.
+Research code for **SoRecRemover**, an influence-based approach to user withdrawal from social recommendation. The current study uses ODSR and DiffNet++ on Epinions and Yelp2018.
 
-**Release status:** the corrected method is frozen in [configs/frozen_corrected_method.json](configs/frozen_corrected_method.json). Experiments are ongoing. This release supplies executable code and reproduction instructions; it does not claim that every paper comparison has finished or that the method provides certified erasure.
+## Current influence-based method
 
-## Method and task
+A withdrawal removes each requested user's interactions and incident social links. SoRecRemover rebuilds both graphs, evaluates the original and retained training objectives in shared parameter coordinates, and solves a damped influence system with Hessian–vector products. The deployed model uses the retained graphs and excludes the requested user embeddings. The study measures ranking utility, score fidelity to retraining, interaction-membership leakage, and update time separately.
+
+After installing dependencies and preparing the datasets using the instructions below, run one dataset and seed from the repository root:
+
+```bash
+python scripts/train_odsr.py --dataset epinions --seed 42 --device cuda:0
+python scripts/run_sorecremover_influence.py --backbone ODSR --dataset epinions --seed 42 --device cuda:0
+python scripts/run_diffnet_plus.py --dataset epinions --seed 42 --device cuda:0
+```
+
+The ODSR correction reuses the original checkpoint and writes a compact deployment. The DiffNet++ runner trains the original and retained reference models, evaluates its graph-only, fine-tuning, and influence variants, and runs the interaction-membership audit. Use `yelp2018` for the second dataset and repeat with seeds 43 and 44 for the three-run setup. These commands start GPU experiments.
+
+Additional entry points:
+
+| Experiment | Script |
+| --- | --- |
+| ODSR graph-only and scratch reference | `scripts/run_edge_user_odsr.py` with `--method graph_only` or `--method retrain` |
+| ODSR SCIF, RRL, and DA² | `scripts/run_original_graph_baseline.py` |
+| ODSR GNNDelete | `scripts/run_gnndelete_social.py` |
+| ODSR interaction-membership audit | `scripts/run_influence_mia.py` |
+| DiffNet++ SCIF, RRL, DA², and GNNDelete | `scripts/run_diffnet_baseline.py` |
+| Correction ablations | `scripts/run_native_ablations.py` |
+| DiffNet++ deletion-rate comparisons | `scripts/run_diffnet_deletion_rate.py` and `scripts/run_diffnet_baseline_deletion_rate.py` |
+
+Run the original and reference checkpoints before downstream comparisons or ablations. Use `--help` for individual arguments.
+
+## Earlier ODSR and EGCL release
 
 A deletion request removes every requested user's interaction edges and incoming/outgoing social edges. User/item IDs and embedding-table dimensions stay fixed. Adjacency matrices and normalization are rebuilt from the remaining edges; requested users become isolated. Utility is evaluated on retained users.
 
@@ -42,7 +68,7 @@ python -m pytest -q
 
 The setup script fetches GNNDelete, DA2Unlearn, and EGCL at the commits in [upstream_sources.json](configs/upstream_sources.json). It fetches Epinions/Yelp2018 from the pinned ODSR revision, resolves Git LFS pointers, and verifies file size and SHA-256. Existing data with different hashes is rejected. Downloaded data, checkpoints, and upstream checkouts are excluded from Git. See [data and dependencies](docs/DATA_AND_DEPENDENCIES.md).
 
-## Reproduce the main comparisons
+## Reproduce the earlier ODSR and EGCL comparisons
 
 Inspect the commands without starting training:
 
@@ -66,9 +92,9 @@ python scripts/reproduce.py --backbone ODSR --datasets epinions --seeds 42 \
   --methods retraining graph_pruning retain_finetuning sorecremover --device cuda:0
 ```
 
-Use `scripts/run_sorecremover.py --backbone ODSR` or `--backbone EGCL` for the current method. The named commands are listed in [code names](docs/CODE_NAMES.md). They call the frozen implementations, preserving source hashes and checkpoint compatibility. The historical `--method ours` is an earlier method and **must not be labeled SoRecRemover**.
+Use `scripts/run_sorecremover.py --backbone ODSR` or `--backbone EGCL` for the earlier frozen method. The named commands are listed in [code names](docs/CODE_NAMES.md). They call the frozen implementations, preserving source hashes and checkpoint compatibility. The historical `--method ours` is an earlier method and **must not be labeled SoRecRemover**.
 
-## Deletion sweeps and ablations
+## Earlier deletion sweeps and ablations
 
 The paper sweep is scoped to ODSR on Epinions. Each fraction uses all three seeds, with matched deletion IDs across methods:
 
@@ -89,7 +115,7 @@ The runner includes the scratch reference even if only `sorecremover` is selecte
 | --- | --- |
 | ODSR backbone | `scripts/train_odsr.py` |
 | EGCL backbone | `scripts/train_egcl.py` |
-| SoRecRemover (current method) | `scripts/run_sorecremover.py` |
+| SoRecRemover (earlier frozen method) | `scripts/run_sorecremover.py` |
 | SCIF | `scripts/run_scif.py` |
 | GNNDelete | `scripts/run_gnndelete.py` |
 | DA2Unlearn | `scripts/run_da2unlearn.py` |

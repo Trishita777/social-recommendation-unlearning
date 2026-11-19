@@ -121,7 +121,7 @@ def compact(original,data,cfg,device):
 
 
 @torch.no_grad()
-def sensitivity(original,teacher,data,rng,device,batch=512):
+def sensitivity(original,teacher,data,rng,device,batch=512,*,store_teacher_targets=True):
     t0=time.perf_counter(); original.eval(); teacher.eval(); ou,oi=original(); tu,ti=teacher(); oldkeep=torch.as_tensor(data.keep,device=device)
     # Fixed negatives: same triplets on the original and counterfactual retained graphs.
     neg=negatives(data,data.train[:,0],rng); rec=np.zeros(len(data.train),np.float32)
@@ -140,11 +140,12 @@ def sensitivity(original,teacher,data,rng,device,batch=512):
         po=lo.softmax(1); pt=lt.softmax(1)
         js=.5*((po*(po.clamp_min(1e-12).log()-((po+pt)/2).clamp_min(1e-12).log())).sum(1)+(pt*(pt.clamp_min(1e-12).log()-((po+pt)/2).clamp_min(1e-12).log())).sum(1))
         mass=torch.cat([lo,a@dc.T/teacher.ssl_temp],1).softmax(1)[:,lo.shape[1]:].sum(1) if len(deleted) else torch.zeros(len(a),device=device)
-        anchor[s:s+batch]=(js+mass).cpu().numpy(); targets.append(pt)
+        anchor[s:s+batch]=(js+mass).cpu().numpy()
+        if store_teacher_targets:targets.append(pt)
     def weight(x):
         # Normalize sensitivity first, clip to [0,4], then add a positive floor and normalize mean.
         w=1+np.clip(x/max(float(x.mean()),1e-8),0,4); return w/w.mean()
-    return dict(rec=torch.tensor(weight(rec),device=device),anchor=torch.tensor(weight(anchor),device=device),targets=torch.cat(targets),candidates=torch.as_tensor(retained,device=device),seconds=time.perf_counter()-t0,stats=dict(rec_mean=float(rec.mean()),anchor_mean=float(anchor.mean()),retained_candidates=len(retained),deleted_candidates=len(deleted),deleted_mass_scope='fixed sampled candidate probe, not full user universe'))
+    return dict(rec=torch.tensor(weight(rec),device=device),anchor=torch.tensor(weight(anchor),device=device),targets=torch.cat(targets) if store_teacher_targets else None,candidates=torch.as_tensor(retained,device=device),seconds=time.perf_counter()-t0,stats=dict(rec_mean=float(rec.mean()),anchor_mean=float(anchor.mean()),retained_candidates=len(retained),deleted_candidates=len(deleted),deleted_mass_scope='fixed sampled candidate probe, not full user universe'))
 
 
 def loss_terms(model,u,p,n,weights=None,indices=None,mode='original'):
