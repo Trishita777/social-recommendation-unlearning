@@ -24,7 +24,7 @@ VARIANTS = {
     'no_load_regularizer': 'Without load regularization',
     'no_calibration': 'Fixed secondary mixing',
 }
-DATASETS = {'douban-book': 'Douban-Book', 'yelp2018': 'Yelp2018'}
+DATASETS = {'douban-book': 'Douban-Book', 'yelp2018': 'Yelp2018','recflow-yelp':'Yelp (RecFlow)'}
 GRAPH_MOE = 'sorecremover_graph_moe'
 RANKING = ('recall@20', 'ndcg@20')
 
@@ -42,18 +42,18 @@ def row(*values):
 
 def table(caption, columns, rows):
     return '\n'.join((
-        r'\begin{table}[htbp]', r'\centering\small', f'\\caption{{{caption}}}',
+        r'\begin{table*}[t]', r'\centering\small', f'\\caption{{{caption}}}',
         f'\\begin{{tabular}}{{l{"r" * (len(columns) - 1)}}}', r'\toprule',
         row(*columns), r'\midrule', *rows, r'\bottomrule',
-        r'\end{tabular}', r'\end{table}',
+        r'\end{tabular}', r'\end{table*}',
     ))
 
 
 def render(report):
     main = report['main']
     parts = [
-        r'\section{Partition-Based Unlearning with GraphMoE}',
-        r'We evaluate 1\% user withdrawal on Douban-Book and Yelp2018 with ODSR and DiffNet++. '
+        r'\section{Detailed benchmark results}\label{app:results}',
+        r'We evaluate 1\% user withdrawal on Douban-Book and Yelp2018 with ODSR and on the RecFlow Yelp split with a RecFlow reproduction. '
         r'All partition methods use 10 shards. Each fit uses up to 30 epochs, validation at '
         r'epoch 1 and every two epochs thereafter, and the checkpoint with the best validation '
         r'Recall@20. Full retraining uses a single model. This study measures retained-user '
@@ -61,8 +61,8 @@ def render(report):
         r'Update time excludes initial model fitting and final test evaluation. Timings were '
         r'measured on shared H100 NVL GPUs and may reflect host and device contention.',
         f'The verified snapshot contains {main["completed"]} of {main["total"]} benchmark runs, '
-        f'{report["additional_ablation_runs"]} of 16 additional ablation runs, and '
-        f'{report["router_ablation_cases"]} of 6 router cases. '
+        f'{report["additional_ablation_runs"]} of 8 additional ablation runs, and '
+        f'{report["router_ablation_cases"]} of 3 router cases. '
         r'Each row reports its seed count. Entries with multiple seeds give the mean and sample '
         r'standard deviation. The three benchmark seeds are 42, 43, and 44.',
         r'\subsection{Main comparison}',
@@ -87,8 +87,8 @@ def render(report):
                 ('Method', '$n$', 'Recall@10', 'NDCG@10', 'Recall@20', 'NDCG@20', 'Update (s)'),
                 rows,
             ))
-    parts.append(r'\clearpage\subsection{Partitioning and routing ablations}')
-    for backbone, dataset in (('ODSR', 'yelp2018'), ('DiffNet++', 'douban-book')):
+    parts.append(r'\FloatBarrier\subsection{Partitioning and routing ablations}')
+    for backbone, dataset in (('ODSR', 'yelp2018'),):
         cases = [report['ablations'][f'{backbone}/{dataset}/{seed}'] for seed in (42, 43, 44)]
         rows = []
         for variant, label in {'full': 'Full GraphMoE', **VARIANTS}.items():
@@ -115,7 +115,7 @@ def render(report):
         ))
     parts.append(r'\subsection{Shard-count sensitivity}')
     rows = []
-    for backbone, dataset in (('ODSR', 'yelp2018'), ('DiffNet++', 'douban-book')):
+    for backbone, dataset in (('ODSR', 'yelp2018'),):
         case = report['ablations'][f'{backbone}/{dataset}/42']
         for shards, variant in ((10, 'full'), (20, 'shards20'), (50, 'shards50')):
             run = case.get(variant)
@@ -131,7 +131,7 @@ def render(report):
         ('Backbone / dataset', 'Shards', 'Recall@20', 'NDCG@20', 'Update (s)', 'Affected', 'Social retention'),
         rows,
     ))
-    parts.append(r'\clearpage\subsection{Per-seed benchmark results}')
+    parts.append(r'\FloatBarrier\subsection{Per-seed benchmark results}')
     for backbone, datasets in main['aggregate'].items():
         for dataset in datasets:
             rows = []

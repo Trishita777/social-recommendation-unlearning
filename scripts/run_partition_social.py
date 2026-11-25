@@ -18,6 +18,7 @@ from torch.nn import functional as F
 
 from partition_odsr import ODSR, ROOT, atomic_json, digest, evaluate, graph, load_data
 from partition_odsr import loss_terms, negatives, seed_everything
+from social_unlearning.recflow import RecFlow
 from social_unlearning.diffnet_plus import DiffNetPlus, make_graph, training_examples, user_batch
 
 
@@ -291,6 +292,12 @@ def fit_shard(raw, users, cfg, args, device, guide=None, active=None, training_l
         loss_fn = model.loss
         batch_size = 512
         lr = .0005
+    elif args.backbone == 'RecFlow':
+        model = RecFlow(data, device, args.seed, item_generator)
+        batches = odsr_batches
+        loss_fn = model.loss
+        batch_size = 4096
+        lr = args.recflow_lr
     else:
         model = ODSR(data, cfg, device).to(device)
         nn.init.xavier_uniform_(model.embedding_dict['item_emb'], generator=item_generator)
@@ -298,7 +305,8 @@ def fit_shard(raw, users, cfg, args, device, guide=None, active=None, training_l
         loss_fn = lambda u, p, n: loss_terms(model, u, p, n)
         batch_size = cfg['batch_size']
         lr = cfg['lr']
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=.001 if args.backbone == "RecFlow" else 0.)
+    decay = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=.96) if args.backbone == "RecFlow" else None
     rng = np.random.default_rng(args.seed)
     best_score = -1
     best = None
@@ -315,6 +323,8 @@ def fit_shard(raw, users, cfg, args, device, guide=None, active=None, training_l
             loss.backward()
             optimizer.step()
             steps += 1
+        if decay is not None:
+            decay.step()
         if epoch == 1 or epoch % args.validation_every == 0 or epoch == args.epochs:
             metrics, (users_emb, items_emb, _) = evaluate(model, data, data.val, device)
             score = metrics.get('recall@20', 0)
@@ -675,11 +685,12 @@ def run(args):
     deleted = np.sort(np.random.default_rng(args.seed + 10000).permutation(raw.U)[:n_delete])
     keep = np.setdiff1d(np.arange(raw.U), deleted)
     dataset_config = {
+
         'yelp2018': dict(eps=.54, ssl_reg=.43, dropout=.17),
         'douban-book': dict(eps=.57, ssl_reg=.58, dropout=.01),
     }
     cfg = dict(seed=args.seed, lr=.001, emb_size=64, n_layer=3, tau=.2, reg=0.,
-               batch_size=2048, **dataset_config[args.dataset])
+               batch_size=2048, **(dataset_config[args.dataset] if args.backbone == 'ODSR' else {}))
     results = dict(backbone=args.backbone, dataset=args.dataset, seed=args.seed, fraction=args.fraction,
                    shards=args.shards, epochs=args.epochs, aggregation_epochs=args.aggregation_epochs,
                    validation_every=args.validation_every, split_hash=raw.meta['split_hash'],
@@ -688,6 +699,9 @@ def run(args):
                    device=str(device),
                    source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                    completion='partial', methods={})
+    if args.backbone == 'RecFlow':
+        results['backbone_source_sha256'] = hashlib.sha256((ROOT/'src/social_unlearning/recflow.py').read_bytes()).hexdigest()
+        results['backbone_recipe'] = dict(implementation='paper-based reproduction', dimension=64, layers=2, learning_rate=args.recflow_lr, decay=.96, batch_size=4096, regularization=.001, time_dimension=8)
     if ablation:
         results['ablation'] = ablation
     if args.backbone == 'DiffNet++':
@@ -830,8 +844,9 @@ def run(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--backbone', choices=['ODSR', 'DiffNet++'], default='ODSR')
-    parser.add_argument('--dataset', choices=['douban-book', 'yelp2018'], required=True)
+    parser.add_argument('--backbone', choices=['ODSR', 'RecFlow'], default='ODSR')
+    parser.add_argument('--dataset', choices=['yelp2018', 'douban-book', 'recflow-yelp'], required=True)
+    parser.add_argument('--recflow-lr', type=float, default=.001)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--fraction', type=float, default=.01)

@@ -7,7 +7,7 @@ from run_partition_epoch_sweep import ROOT, SEEDS, save
 RESULTS = ROOT / 'results/partition_social'
 MAIN = RESULTS / 'douban_yelp_epoch30_shards10'
 ABLATIONS = RESULTS / 'graph_moe_ablation30_shards10'
-PAPER_CASES = (('ODSR', 'yelp2018'), ('DiffNet++', 'douban-book'))
+PAPER_CASES = (('ODSR', 'yelp2018'),)
 METHOD = 'sorecremover_graph_moe'
 
 
@@ -45,12 +45,12 @@ def collect():
 
     component_runs = sum(len(set(rows) - {'full'}) for rows in ablations.values())
     router_runs = sum(bool(rows.get('full', {}).get('router_ablations')) for rows in ablations.values())
-    complete = bool(main.get('complete')) and component_runs == 16 and router_runs == 6
+    complete = bool(main.get('complete')) and component_runs == 8 and router_runs == 3
     report = dict(complete=complete, main=main, ablations=ablations,
                   additional_ablation_runs=component_runs, router_ablation_cases=router_runs,
                   updated=time.time())
     save(MAIN / ('all_results.json' if complete else 'all_results_partial.json'), report)
-    print(f"Main {main.get('completed', 0)}/96, ablation runs {component_runs}/16, router cases {router_runs}/6",
+    print(f"Main {main.get('completed', 0)}/72, ablation runs {component_runs}/8, router cases {router_runs}/3",
           flush=True)
     return complete
 

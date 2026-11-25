@@ -1,6 +1,6 @@
 # GraphMoE SoRecRemover
 
-This repository implements partition-based user withdrawal for social recommendation with ODSR and DiffNet++. It includes full retraining, RecEraser-social, UltraRE-social, GraphEraser-social, GUIDE-Fast-social, the EEMU partition control, and the SoRecRemover partition and aggregation variants.
+This repository implements partition-based user withdrawal for social recommendation with ODSR and a paper-based reproduction of RecFlow. It includes full retraining, RecEraser-social, UltraRE-social, GraphEraser-social, GUIDE-Fast-social, the EEMU partition control, and the SoRecRemover partition and aggregation variants.
 
 GraphMoE refits affected experts from scratch and rebuilds the catalogs and router using retained data under the original shard assignment. A fresh partition of the retained graph can differ from that assignment.
 
@@ -17,8 +17,8 @@ python scripts/run_partition_social.py --backbone ODSR --dataset douban-book \
   --output results/douban-book-odsr-seed42.json
 ```
 
-Repeat with seeds 43 and 44, datasets `douban-book` and `yelp2018`, and backbones `ODSR` and `DiffNet++`. Run `python scripts/run_partition_epoch_sweep.py --help` for the resumable benchmark runner. Run GraphMoE as the sole method for ablation runs. The paired ablations use `--ablation one_hop_partition`, `--ablation user_balance_only`, and `--router-ablations`. Shard-count sensitivity runs use 10, 20, and 50 shards.
+Run ODSR on `douban-book` and `yelp2018`. For RecFlow, use `--backbone RecFlow --dataset recflow-yelp` and the native [Yelp archive](https://github.com/HKUDS/RecDiff/blob/c73dc99858cd1e4accab44c3b25d142acfe5cb26/datasets/yelp/dataset.pkl.zip) at `external/RecFlowData/yelp.zip`. Record all three seeds (42, 43, 44). Run `python scripts/run_partition_epoch_sweep.py --help` for the resumable benchmark runner. Run GraphMoE as the sole method for ablation runs. The paired ablations use `--ablation one_hop_partition`, `--ablation user_balance_only`, and `--router-ablations`. Shard-count sensitivity runs use 10, 20, and 50 shards.
 
-See [the study protocol](docs/PARTITION_SOCIAL_STUDY.md) for design and experimental details and [the verified benchmark snapshot](artifacts/graph-moe-results.json) for completed runs and ablations. The planned benchmark contains 96 runs, 16 additional ablation runs, and six router cases.
+See [the study protocol](docs/PARTITION_SOCIAL_STUDY.md) for design and experimental details and [the verified benchmark snapshot](artifacts/graph-moe-results.json) for completed runs and ablations. The planned benchmark contains 72 runs, eight additional ablation runs, and three router cases.
 
 Regenerate the tables with `python scripts/export_graph_moe_overleaf.py --allow-partial --source artifacts/graph-moe-results.json --output graph-moe-results.tex`.

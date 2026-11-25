@@ -13,7 +13,7 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
-BACKBONES = ('ODSR', 'DiffNet++')
+BACKBONES = ('ODSR', 'RecFlow')
 DATASETS = ('douban-book', 'yelp2018')
 SEEDS = (42, 43, 44)
 PRIMARY_METHODS = ('retrain', 'sorecremover_partition', 'sorecremover_graph_moe')
@@ -22,7 +22,7 @@ OTHER_METHODS = ('receraser_social', 'ultrare_social',
 METHODS = PRIMARY_METHODS + OTHER_METHODS
 EPOCHS = 30
 VALIDATION_EVERY = 2
-CASES = [(b, d, s) for b in BACKBONES for d in DATASETS for s in SEEDS]
+CASES = [(b, d, s) for b, d in (('ODSR','yelp2018'), ('ODSR','douban-book'), ('RecFlow','recflow-yelp')) for s in SEEDS]
 METRICS = ('recall@10', 'ndcg@10', 'recall@20', 'ndcg@20')
 
 
@@ -34,7 +34,7 @@ def save(path, data):
 
 def result_path(out, case, method):
     backbone, dataset, seed = case
-    tag = 'odsr' if backbone == 'ODSR' else 'diffnet'
+    tag = 'odsr' if backbone == 'ODSR' else 'recflow'
     return out / f'{tag}_{dataset}_seed{seed}_{method}.json'
 
 
@@ -112,7 +112,7 @@ def worker(args, source):
                                '--epochs', str(EPOCHS), '--validation-every', str(VALIDATION_EVERY),
                                '--shards', str(args.shards), '--methods', method, '--output', str(path)]
                         if args.router_ablations and method == 'sorecremover_graph_moe' and case[:2] in (
-                            ('ODSR', 'yelp2018'), ('DiffNet++', 'douban-book')
+                            ('ODSR', 'yelp2018'),
                         ):
                             cmd.append('--router-ablations')
                         with path.with_suffix('.log').open('a') as log:

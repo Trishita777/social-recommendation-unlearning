@@ -27,6 +27,19 @@ def atomic_json(path, obj):
 
 
 def load_data(dataset, seed):
+    if dataset == 'recflow-yelp':
+        import zipfile
+        import pickle
+        path = ROOT/'external/RecFlowData/yelp.zip'
+        if hashlib.sha256(path.read_bytes()).hexdigest() != 'c5e9155f25da2b707f1ceac37588da22ca7e6419efa16fa8daef0eac0d453633':
+            raise ValueError('Unexpected RecFlow Yelp archive')
+        with zipfile.ZipFile(path) as bundle:
+            native = pickle.loads(bundle.read('dataset.pkl'))
+        def pairs(key):
+            return np.column_stack(native[key].tocsr().nonzero()).astype(np.int64)
+        train, val, test, social = (pairs(key) for key in ('train','val','test','trust'))
+        meta = dict(split_hash=digest(np.concatenate([train,[[-1,-1]],val,[[-2,-2]],test])), social_hash=digest(social))
+        return SimpleNamespace(train=train,val=val,test=test,social=social,U=native['userCount'],I=native['itemCount'],meta=meta)
     base = ROOT/'external/ODSR/dataset'/dataset
     files = [base/'train.txt', base/'test.txt', base/('trust.txt' if (base/'trust.txt').exists() else 'links.txt')]
     for p in files:
