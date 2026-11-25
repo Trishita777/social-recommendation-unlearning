@@ -4,7 +4,7 @@
     "epochs": 30,
     "shards": 10,
     "validation_every": 2,
-    "completed": 49,
+    "completed": 52,
     "total": 72,
     "runs": {
       "ODSR/yelp2018/42/retrain": {
@@ -6850,6 +6850,242 @@
           }
         }
       },
+      "ODSR/douban-book/43/ultrare_social": {
+        "backbone": "ODSR",
+        "dataset": "douban-book",
+        "seed": 43,
+        "fraction": 0.01,
+        "shards": 10,
+        "epochs": 30,
+        "aggregation_epochs": 10,
+        "validation_every": 2,
+        "split_hash": "3eea013042b60c739d0b629d8ffee90c1b005c29648569568f98499bf81c0925",
+        "deleted_users": 126,
+        "deletion_hash": "71e19a81525c036706fc426a04a752d9b2f3f3a71b7293697727374701181446",
+        "social_hash": "c7f0749af7776307ec9be8dcf12df68e295b7c5a6aa19a6c1294fb69d942bf05",
+        "gpu": "NVIDIA H100 NVL",
+        "device": "cuda:0",
+        "source_sha256": "a4f718456bacb2f01296b366241a6b7f50ba8f172061a4894bd02f222808c516",
+        "completion": "complete",
+        "methods": {
+          "ultrare_social": {
+            "utility": {
+              "precision@10": 0.03776177390315648,
+              "recall@10": 0.04462130044492843,
+              "map@10": 0.026540420712191926,
+              "ndcg@10": 0.054510772442356824,
+              "precision@20": 0.02868378660096787,
+              "recall@20": 0.06449166172086863,
+              "map@20": 0.024537610730681288,
+              "ndcg@20": 0.05752496972718552,
+              "evaluated_users": 10553
+            },
+            "partition_seconds": 1.1088337170076557,
+            "original_setup_seconds": 140.4267862229899,
+            "update_seconds": 136.49243712300085,
+            "test_seconds": 0.7245058270054869,
+            "peak_gpu_bytes": 379473408,
+            "affected_shards": 10,
+            "shard_users": [
+              1264,
+              1264,
+              1264,
+              1264,
+              1264,
+              1264,
+              1264,
+              1264,
+              1263,
+              1263
+            ],
+            "original_training": [
+              {
+                "shard": 0,
+                "users": 1264,
+                "epochs": 30,
+                "best_epoch": 28,
+                "optimizer_steps": 240,
+                "best_validation_recall_at_20": 0.09805769610748866,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 1,
+                "users": 1264,
+                "epochs": 28,
+                "best_epoch": 8,
+                "optimizer_steps": 28,
+                "best_validation_recall_at_20": 0.0027548209366391185,
+                "stopped_on_patience": true
+              },
+              {
+                "shard": 2,
+                "users": 1264,
+                "epochs": 30,
+                "best_epoch": 28,
+                "optimizer_steps": 540,
+                "best_validation_recall_at_20": 0.1690143404308111,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 3,
+                "users": 1264,
+                "epochs": 30,
+                "best_epoch": 10,
+                "optimizer_steps": 750,
+                "best_validation_recall_at_20": 0.16598945268314247,
+                "stopped_on_patience": true
+              },
+              {
+                "shard": 4,
+                "users": 1264,
+                "epochs": 30,
+                "best_epoch": 28,
+                "optimizer_steps": 90,
+                "best_validation_recall_at_20": 0.0215,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 5,
+                "users": 1264,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 750,
+                "best_validation_recall_at_20": 0.1949612052855724,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 6,
+                "users": 1264,
+                "epochs": 30,
+                "best_epoch": 14,
+                "optimizer_steps": 2640,
+                "best_validation_recall_at_20": 0.12068966043993329,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 7,
+                "users": 1264,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 240,
+                "best_validation_recall_at_20": 0.06982899022801303,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 8,
+                "users": 1263,
+                "epochs": 30,
+                "best_epoch": 16,
+                "optimizer_steps": 840,
+                "best_validation_recall_at_20": 0.11375224691733,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 9,
+                "users": 1263,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 330,
+                "best_validation_recall_at_20": 0.07499649473333683,
+                "stopped_on_patience": false
+              }
+            ],
+            "update_training": [
+              {
+                "shard": 0,
+                "users": 1245,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 240,
+                "best_validation_recall_at_20": 0.10338071147514655,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 1,
+                "users": 1245,
+                "epochs": 20,
+                "best_epoch": 1,
+                "optimizer_steps": 20,
+                "best_validation_recall_at_20": 0.002805049088359046,
+                "stopped_on_patience": true
+              },
+              {
+                "shard": 2,
+                "users": 1252,
+                "epochs": 30,
+                "best_epoch": 26,
+                "optimizer_steps": 540,
+                "best_validation_recall_at_20": 0.16360976192654425,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 3,
+                "users": 1253,
+                "epochs": 30,
+                "best_epoch": 12,
+                "optimizer_steps": 750,
+                "best_validation_recall_at_20": 0.1627699808833961,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 4,
+                "users": 1253,
+                "epochs": 22,
+                "best_epoch": 2,
+                "optimizer_steps": 66,
+                "best_validation_recall_at_20": 0.010595358224016145,
+                "stopped_on_patience": true
+              },
+              {
+                "shard": 5,
+                "users": 1254,
+                "epochs": 30,
+                "best_epoch": 20,
+                "optimizer_steps": 720,
+                "best_validation_recall_at_20": 0.19575064160496047,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 6,
+                "users": 1251,
+                "epochs": 30,
+                "best_epoch": 22,
+                "optimizer_steps": 2610,
+                "best_validation_recall_at_20": 0.11982886861320227,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 7,
+                "users": 1251,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 240,
+                "best_validation_recall_at_20": 0.0701371742112483,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 8,
+                "users": 1254,
+                "epochs": 30,
+                "best_epoch": 14,
+                "optimizer_steps": 840,
+                "best_validation_recall_at_20": 0.11250167587991812,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 9,
+                "users": 1254,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 330,
+                "best_validation_recall_at_20": 0.07112593542038893,
+                "stopped_on_patience": false
+              }
+            ],
+            "within_shard_social_edge_fraction": 0.1273175855582969
+          }
+        }
+      },
       "ODSR/douban-book/42/sorecremover_partition": {
         "backbone": "ODSR",
         "dataset": "douban-book",
@@ -9296,6 +9532,500 @@
               }
             ],
             "within_shard_social_edge_fraction": 0.2123367952179478
+          }
+        },
+        "backbone_source_sha256": "0fd9ea7d732673b8e5b2e042db4e26c7562bcb28d5df4e7b926a73fe764934b3",
+        "backbone_recipe": {
+          "implementation": "paper-based reproduction",
+          "dimension": 64,
+          "layers": 2,
+          "learning_rate": 0.001,
+          "decay": 0.96,
+          "batch_size": 4096,
+          "regularization": 0.001,
+          "time_dimension": 8
+        }
+      },
+      "RecFlow/recflow-yelp/42/ultrare_social": {
+        "backbone": "RecFlow",
+        "dataset": "recflow-yelp",
+        "seed": 42,
+        "fraction": 0.01,
+        "shards": 10,
+        "epochs": 30,
+        "aggregation_epochs": 10,
+        "validation_every": 2,
+        "split_hash": "b53b66c469ce3c5024338f2995657a5881ef2702117bcca307779856bb5910ff",
+        "deleted_users": 993,
+        "deletion_hash": "6345612513fd8bb6834622ba1e780ecf0a1388d688c57ee86562b809501075a3",
+        "social_hash": "727e1d1ecb7f5ed65543ce22b9d1ed3521555891e9cab74b879a574d2c1e8146",
+        "gpu": "NVIDIA H100 NVL",
+        "device": "cuda:0",
+        "source_sha256": "a4f718456bacb2f01296b366241a6b7f50ba8f172061a4894bd02f222808c516",
+        "completion": "complete",
+        "methods": {
+          "ultrare_social": {
+            "utility": {
+              "precision@10": 0.0007945427866754152,
+              "recall@10": 0.0030869384116699095,
+              "map@10": 0.0009657156974859633,
+              "ndcg@10": 0.0018376715054641488,
+              "precision@20": 0.0007383472261246832,
+              "recall@20": 0.006052429835796764,
+              "map@20": 0.0011517060583937496,
+              "ndcg@20": 0.0027034604460307115,
+              "evaluated_users": 64062
+            },
+            "partition_seconds": 10.627936336008133,
+            "original_setup_seconds": 91.04420545598259,
+            "update_seconds": 79.84926491600345,
+            "test_seconds": 4.183546626009047,
+            "peak_gpu_bytes": 1046988288,
+            "affected_shards": 10,
+            "shard_users": [
+              9927,
+              9927,
+              9926,
+              9926,
+              9926,
+              9926,
+              9926,
+              9926,
+              9926,
+              9926
+            ],
+            "original_training": [
+              {
+                "shard": 0,
+                "users": 9927,
+                "epochs": 24,
+                "best_epoch": 4,
+                "optimizer_steps": 528,
+                "best_validation_recall_at_20": 0.053450644032532094,
+                "stopped_on_patience": true
+              },
+              {
+                "shard": 1,
+                "users": 9927,
+                "epochs": 30,
+                "best_epoch": 28,
+                "optimizer_steps": 270,
+                "best_validation_recall_at_20": 0.01277219430485762,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 2,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 28,
+                "optimizer_steps": 330,
+                "best_validation_recall_at_20": 0.0289676290463692,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 3,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 14,
+                "optimizer_steps": 450,
+                "best_validation_recall_at_20": 0.02685270966723625,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 4,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 180,
+                "best_validation_recall_at_20": 0.005625476735316552,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 5,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 26,
+                "optimizer_steps": 360,
+                "best_validation_recall_at_20": 0.025526562556353008,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 6,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 14,
+                "optimizer_steps": 300,
+                "best_validation_recall_at_20": 0.015002377555872564,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 7,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 26,
+                "optimizer_steps": 420,
+                "best_validation_recall_at_20": 0.018496254681647943,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 8,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 1650,
+                "best_validation_recall_at_20": 0.02152385973827252,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 9,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 18,
+                "optimizer_steps": 420,
+                "best_validation_recall_at_20": 0.024342270787479303,
+                "stopped_on_patience": false
+              }
+            ],
+            "update_training": [
+              {
+                "shard": 0,
+                "users": 9827,
+                "epochs": 30,
+                "best_epoch": 22,
+                "optimizer_steps": 660,
+                "best_validation_recall_at_20": 0.051281768264869666,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 1,
+                "users": 9807,
+                "epochs": 30,
+                "best_epoch": 24,
+                "optimizer_steps": 270,
+                "best_validation_recall_at_20": 0.012492941840767928,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 2,
+                "users": 9834,
+                "epochs": 30,
+                "best_epoch": 16,
+                "optimizer_steps": 330,
+                "best_validation_recall_at_20": 0.029668342595042776,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 3,
+                "users": 9829,
+                "epochs": 30,
+                "best_epoch": 10,
+                "optimizer_steps": 450,
+                "best_validation_recall_at_20": 0.02685130347142129,
+                "stopped_on_patience": true
+              },
+              {
+                "shard": 4,
+                "users": 9821,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 180,
+                "best_validation_recall_at_20": 0.0050134719014626634,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 5,
+                "users": 9819,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 360,
+                "best_validation_recall_at_20": 0.025428583604242,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 6,
+                "users": 9829,
+                "epochs": 30,
+                "best_epoch": 16,
+                "optimizer_steps": 300,
+                "best_validation_recall_at_20": 0.014498949276855246,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 7,
+                "users": 9832,
+                "epochs": 30,
+                "best_epoch": 16,
+                "optimizer_steps": 420,
+                "best_validation_recall_at_20": 0.018973281864971242,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 8,
+                "users": 9830,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 1650,
+                "best_validation_recall_at_20": 0.02183430693522268,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 9,
+                "users": 9841,
+                "epochs": 30,
+                "best_epoch": 26,
+                "optimizer_steps": 420,
+                "best_validation_recall_at_20": 0.02400652480594341,
+                "stopped_on_patience": false
+              }
+            ],
+            "within_shard_social_edge_fraction": 0.26419421465327503
+          }
+        },
+        "backbone_source_sha256": "0fd9ea7d732673b8e5b2e042db4e26c7562bcb28d5df4e7b926a73fe764934b3",
+        "backbone_recipe": {
+          "implementation": "paper-based reproduction",
+          "dimension": 64,
+          "layers": 2,
+          "learning_rate": 0.001,
+          "decay": 0.96,
+          "batch_size": 4096,
+          "regularization": 0.001,
+          "time_dimension": 8
+        }
+      },
+      "RecFlow/recflow-yelp/43/ultrare_social": {
+        "backbone": "RecFlow",
+        "dataset": "recflow-yelp",
+        "seed": 43,
+        "fraction": 0.01,
+        "shards": 10,
+        "epochs": 30,
+        "aggregation_epochs": 10,
+        "validation_every": 2,
+        "split_hash": "b53b66c469ce3c5024338f2995657a5881ef2702117bcca307779856bb5910ff",
+        "deleted_users": 993,
+        "deletion_hash": "12e88fc48ca5c401ec318aa415e5de61859ca20eb345a3c9af04a74e7cc8a7a5",
+        "social_hash": "727e1d1ecb7f5ed65543ce22b9d1ed3521555891e9cab74b879a574d2c1e8146",
+        "gpu": "NVIDIA H100 NVL",
+        "device": "cuda:0",
+        "source_sha256": "a4f718456bacb2f01296b366241a6b7f50ba8f172061a4894bd02f222808c516",
+        "completion": "complete",
+        "methods": {
+          "ultrare_social": {
+            "utility": {
+              "precision@10": 0.0007822014051522316,
+              "recall@10": 0.003159404056819008,
+              "map@10": 0.0010668342958081282,
+              "ndcg@10": 0.0019480007979330706,
+              "precision@20": 0.000772053083528483,
+              "recall@20": 0.006398535114302597,
+              "map@20": 0.001273658998788406,
+              "ndcg@20": 0.0029071950545228645,
+              "evaluated_users": 64050
+            },
+            "partition_seconds": 9.79043241997715,
+            "original_setup_seconds": 89.26146065798821,
+            "update_seconds": 76.3563737590157,
+            "test_seconds": 4.120066456991481,
+            "peak_gpu_bytes": 1048017920,
+            "affected_shards": 10,
+            "shard_users": [
+              9927,
+              9927,
+              9926,
+              9926,
+              9926,
+              9926,
+              9926,
+              9926,
+              9926,
+              9926
+            ],
+            "original_training": [
+              {
+                "shard": 0,
+                "users": 9927,
+                "epochs": 30,
+                "best_epoch": 24,
+                "optimizer_steps": 240,
+                "best_validation_recall_at_20": 0.016046487805747064,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 1,
+                "users": 9927,
+                "epochs": 30,
+                "best_epoch": 16,
+                "optimizer_steps": 270,
+                "best_validation_recall_at_20": 0.016325824935783443,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 2,
+                "users": 9926,
+                "epochs": 24,
+                "best_epoch": 4,
+                "optimizer_steps": 528,
+                "best_validation_recall_at_20": 0.05303282030381269,
+                "stopped_on_patience": true
+              },
+              {
+                "shard": 3,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 26,
+                "optimizer_steps": 360,
+                "best_validation_recall_at_20": 0.02313579765156621,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 4,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 10,
+                "optimizer_steps": 360,
+                "best_validation_recall_at_20": 0.02392466485730735,
+                "stopped_on_patience": true
+              },
+              {
+                "shard": 5,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 28,
+                "optimizer_steps": 300,
+                "best_validation_recall_at_20": 0.029150399702546934,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 6,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 1680,
+                "best_validation_recall_at_20": 0.021452591972191803,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 7,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 22,
+                "optimizer_steps": 390,
+                "best_validation_recall_at_20": 0.019146650517841656,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 8,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 18,
+                "optimizer_steps": 360,
+                "best_validation_recall_at_20": 0.02311850702768768,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 9,
+                "users": 9926,
+                "epochs": 30,
+                "best_epoch": 16,
+                "optimizer_steps": 450,
+                "best_validation_recall_at_20": 0.02592839085796832,
+                "stopped_on_patience": false
+              }
+            ],
+            "update_training": [
+              {
+                "shard": 0,
+                "users": 9831,
+                "epochs": 30,
+                "best_epoch": 26,
+                "optimizer_steps": 240,
+                "best_validation_recall_at_20": 0.016699510492027496,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 1,
+                "users": 9841,
+                "epochs": 30,
+                "best_epoch": 22,
+                "optimizer_steps": 270,
+                "best_validation_recall_at_20": 0.016329614132961412,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 2,
+                "users": 9813,
+                "epochs": 24,
+                "best_epoch": 4,
+                "optimizer_steps": 528,
+                "best_validation_recall_at_20": 0.05232530813736279,
+                "stopped_on_patience": true
+              },
+              {
+                "shard": 3,
+                "users": 9824,
+                "epochs": 28,
+                "best_epoch": 8,
+                "optimizer_steps": 336,
+                "best_validation_recall_at_20": 0.021929934706177802,
+                "stopped_on_patience": true
+              },
+              {
+                "shard": 4,
+                "users": 9826,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 360,
+                "best_validation_recall_at_20": 0.02364017605048996,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 5,
+                "users": 9837,
+                "epochs": 30,
+                "best_epoch": 14,
+                "optimizer_steps": 300,
+                "best_validation_recall_at_20": 0.02918660287081339,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 6,
+                "users": 9815,
+                "epochs": 30,
+                "best_epoch": 30,
+                "optimizer_steps": 1650,
+                "best_validation_recall_at_20": 0.02154101841608611,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 7,
+                "users": 9820,
+                "epochs": 30,
+                "best_epoch": 14,
+                "optimizer_steps": 390,
+                "best_validation_recall_at_20": 0.01879157222454747,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 8,
+                "users": 9831,
+                "epochs": 30,
+                "best_epoch": 26,
+                "optimizer_steps": 360,
+                "best_validation_recall_at_20": 0.0224271118863693,
+                "stopped_on_patience": false
+              },
+              {
+                "shard": 9,
+                "users": 9831,
+                "epochs": 30,
+                "best_epoch": 24,
+                "optimizer_steps": 450,
+                "best_validation_recall_at_20": 0.02571199733716116,
+                "stopped_on_patience": false
+              }
+            ],
+            "within_shard_social_edge_fraction": 0.2632531447291613
           }
         },
         "backbone_source_sha256": "0fd9ea7d732673b8e5b2e042db4e26c7562bcb28d5df4e7b926a73fe764934b3",
