@@ -1,163 +1,24 @@
-# SoRecRemover
+# GraphMoE SoRecRemover
 
-Research code for **SoRecRemover**, an influence-based approach to user withdrawal from social recommendation. The current study uses ODSR and DiffNet++ on Epinions and Yelp2018.
+This repository implements partition-based user withdrawal for social recommendation with ODSR and DiffNet++. It includes full retraining, RecEraser-social, UltraRE-social, GraphEraser-social, GUIDE-Fast-social, the EEMU partition control, and the SoRecRemover partition and aggregation variants.
 
-## Current influence-based method
+GraphMoE refits affected experts from scratch and rebuilds the catalogs and router using retained data under the original shard assignment. A fresh partition of the retained graph can differ from that assignment.
 
-A withdrawal removes each requested user's interactions and incident social links. SoRecRemover rebuilds both graphs, evaluates the original and retained training objectives in shared parameter coordinates, and solves a damped influence system with Hessian–vector products. The deployed model uses the retained graphs and excludes the requested user embeddings. The study measures ranking utility, score fidelity to retraining, interaction-membership leakage, and update time separately.
+## Run an experiment
 
-After installing dependencies and preparing the datasets using the instructions below, run one dataset and seed from the repository root:
-
-```bash
-python scripts/train_odsr.py --dataset epinions --seed 42 --device cuda:0
-python scripts/run_sorecremover_influence.py --backbone ODSR --dataset epinions --seed 42 --device cuda:0
-python scripts/run_diffnet_plus.py --dataset epinions --seed 42 --device cuda:0
-```
-
-The ODSR correction reuses the original checkpoint and writes a compact deployment. The DiffNet++ runner trains the original and retained reference models, evaluates its graph-only, fine-tuning, and influence variants, and runs the interaction-membership audit. Use `yelp2018` for the second dataset and repeat with seeds 43 and 44 for the three-run setup. These commands start GPU experiments.
-
-Additional entry points:
-
-| Experiment | Script |
-| --- | --- |
-| ODSR graph-only and scratch reference | `scripts/run_edge_user_odsr.py` with `--method graph_only` or `--method retrain` |
-| ODSR SCIF, RRL, and DA² | `scripts/run_original_graph_baseline.py` |
-| ODSR GNNDelete | `scripts/run_gnndelete_social.py` |
-| ODSR interaction-membership audit | `scripts/run_influence_mia.py` |
-| DiffNet++ SCIF, RRL, DA², and GNNDelete | `scripts/run_diffnet_baseline.py` |
-| Correction ablations | `scripts/run_native_ablations.py` |
-| DiffNet++ deletion-rate comparisons | `scripts/run_diffnet_deletion_rate.py` and `scripts/run_diffnet_baseline_deletion_rate.py` |
-
-Run the original and reference checkpoints before downstream comparisons or ablations. Use `--help` for individual arguments.
-
-## Earlier ODSR and EGCL release
-
-A deletion request removes every requested user's interaction edges and incoming/outgoing social edges. User/item IDs and embedding-table dimensions stay fixed. Adjacency matrices and normalization are rebuilt from the remaining edges; requested users become isolated. Utility is evaluated on retained users.
-
-The frozen ODSR method performs:
-
-1. A normalized first-order correction from paired native-loss gradients on the original and altered graphs, using a fixed interaction probe.
-2. An independent reset of isolated requested-user embedding rows.
-3. Five epochs of sensitivity-weighted native retained training, selecting the checkpoint by retained validation Recall@20.
-
-The EGCL adaptation uses its native objective and alternating optimization. EGCL's isolated-user output is structurally zero; this alone is not evidence that shared-model influence was erased. See [method and evaluation](docs/METHOD_AND_EVALUATION.md).
-
-## Installation
-
-Use Linux, Git, Python 3.10 or newer, and a CUDA-capable PyTorch installation for full experiments. CPU is sufficient for the unit tests. The experiment environment used Python 3.12.3 and PyTorch 2.13.0+cu130; exact observed versions are recorded in [environment](docs/ENVIRONMENT.md).
+Install dependencies with `python -m pip install -e .` in the release checkout. Place the Epinions and Yelp2018 `train.txt`, `test.txt`, and `trust.txt` or `links.txt` files from the [ODSR dataset](https://github.com/Rongfeng-Guo/ODSR-KDD-2026/tree/main/dataset) in `external/ODSR/dataset/<dataset>/`. Resolve Git LFS pointers before running.
 
 ```bash
-git clone https://github.com/Trishita777/social-recommendation-unlearning.git
-cd social-recommendation-unlearning
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e '.[test]'
-python -c 'import torch; print(torch.__version__, torch.cuda.is_available())'
+python scripts/run_partition_social.py --backbone ODSR --dataset epinions \
+  --seed 42 --device cuda:0 --fraction .01 --shards 10 --epochs 30 \
+  --validation-every 2 \
+  --methods retrain receraser_social ultrare_social grapheraser_social guide_social \
+    eemu_partition sorecremover_partition sorecremover_graph_moe \
+  --output results/epinions-odsr-seed42.json
 ```
 
-Select a PyTorch build compatible with your GPU driver before running experiments. Run the commands below from the repository root; the scripts and bundled backbone are part of the source checkout.
+Repeat with seeds 43 and 44, datasets `epinions` and `yelp2018`, and backbones `ODSR` and `DiffNet++`. Run `python scripts/run_partition_epoch_sweep.py --help` for the resumable benchmark runner. Run GraphMoE as the sole method for ablation runs. The paired ablations use `--ablation one_hop_partition`, `--ablation user_balance_only`, and `--router-ablations`. Shard-count sensitivity runs use 10, 20, and 50 shards.
 
-Fetch the exact upstream baseline revisions and the official datasets:
+See [the study protocol](docs/PARTITION_SOCIAL_STUDY.md) for design and experimental details and [the verified benchmark snapshot](artifacts/graph-moe-results.json) for the 96 benchmark runs, 16 additional ablation runs, and six router cases.
 
-```bash
-python scripts/prepare_dependencies.py --datasets epinions yelp2018
-python scripts/verify_source.py
-python -m pytest -q
-```
-
-The setup script fetches GNNDelete, DA2Unlearn, and EGCL at the commits in [upstream_sources.json](configs/upstream_sources.json). It fetches Epinions/Yelp2018 from the pinned ODSR revision, resolves Git LFS pointers, and verifies file size and SHA-256. Existing data with different hashes is rejected. Downloaded data, checkpoints, and upstream checkouts are excluded from Git. See [data and dependencies](docs/DATA_AND_DEPENDENCIES.md).
-
-## Reproduce the earlier ODSR and EGCL comparisons
-
-Inspect the commands without starting training:
-
-```bash
-python scripts/reproduce.py --backbone ODSR --dry-run
-```
-
-Run both datasets with seeds 42, 43, and 44 at 1% deletion:
-
-```bash
-python scripts/reproduce.py --backbone ODSR --device cuda:0
-python scripts/reproduce.py --backbone EGCL --device cuda:0
-```
-
-These are substantial GPU jobs, executed sequentially per invocation. The runner trains/reuses original models, creates a matched scratch reference, and then runs the supported methods. It stops on the first failed command. Completed artifacts are reused only when the underlying script's provenance checks pass. Run different datasets/seeds in separate processes only if they write to different output directories.
-
-For one dataset and seed:
-
-```bash
-python scripts/reproduce.py --backbone ODSR --datasets epinions --seeds 42 \
-  --methods retraining graph_pruning retain_finetuning sorecremover --device cuda:0
-```
-
-Use `scripts/run_sorecremover.py --backbone ODSR` or `--backbone EGCL` for the earlier frozen method. The named commands are listed in [code names](docs/CODE_NAMES.md). They call the frozen implementations, preserving source hashes and checkpoint compatibility. The historical `--method ours` is an earlier method and **must not be labeled SoRecRemover**.
-
-## Earlier deletion sweeps and ablations
-
-The paper sweep is scoped to ODSR on Epinions. Each fraction uses all three seeds, with matched deletion IDs across methods:
-
-```bash
-python scripts/reproduce.py --backbone ODSR --datasets epinions \
-  --seeds 42 43 44 --fractions 0.005 0.01 0.02 0.05 --device cuda:0
-
-python scripts/reproduce.py --backbone ODSR --datasets epinions \
-  --seeds 42 43 44 --methods sorecremover \
-  --variants full no_topology uniform_weights no_reset --device cuda:0
-```
-
-The runner includes the scratch reference even if only `sorecremover` is selected. The EGCL comparison currently supports 1% deletion; its control runner does not implement a multi-fraction sweep. See [reproduction details](docs/REPRODUCING.md) for individual commands and membership-inference evaluation.
-
-## Code names
-
-| Component | Runnable file |
-| --- | --- |
-| ODSR backbone | `scripts/train_odsr.py` |
-| EGCL backbone | `scripts/train_egcl.py` |
-| SoRecRemover (earlier frozen method) | `scripts/run_sorecremover.py` |
-| SCIF | `scripts/run_scif.py` |
-| GNNDelete | `scripts/run_gnndelete.py` |
-| DA2Unlearn | `scripts/run_da2unlearn.py` |
-| Scratch retraining | `scripts/run_retraining.py` |
-| Graph pruning | `scripts/run_graph_pruning.py` |
-| Retained fine-tuning | `scripts/run_retain_finetuning.py` |
-
-Each method command accepts `--backbone`, `--dataset`, `--seed`, `--fraction`, and `--device`. SCIF and DA2Unlearn currently support ODSR only. Use `--help` for options or `--dry-run` to inspect the implementation invoked.
-
-## Included comparisons
-
-| Method | ODSR | EGCL | Interpretation |
-| --- | --- | --- | --- |
-| Scratch retraining | Yes | Yes | Fresh parameters on altered graphs |
-| Graph-only | Yes | Yes | Edge removal and graph rebuilding, without learning |
-| Retained fine-tuning | Yes | Yes | Native retained objective |
-| SoRecRemover | Yes | Yes | Frozen corrected method / explicit EGCL adaptation |
-| SCIF | Yes | — | Selective influence approximation adapted to this task |
-| GNNDelete | Yes | Yes | Official deletion operator with backbone-specific objectives |
-| DA2Unlearn | Yes | — | Official difficulty estimator with social-backbone adaptation |
-
-Published baselines are adaptations to the shared social-user deletion protocol, not unchanged reproductions of their original experimental setups. See [baseline notes](docs/BASELINES.md) for the differences and source attribution.
-
-## Outputs and validation
-
-Models, manifests, metrics, timing, and logs are written under `checkpoints/` and `results/`. Their paths encode the backbone, dataset, seed, split, request, and method version. The corrected ODSR method uses `checkpoints/odsr_native_topology_v1/`; edge controls use `checkpoints/edge_user_v1/`. Controlled MIA has separate target/checkpoint namespaces.
-
-The test suite covers graph rebuilding, isolation/reset, correction gradients, checkpoint recovery, native losses, and MIA identity separation. [Validation notes](docs/VALIDATION.md) state what has actually been run. A passing test suite is not an empirical unlearning guarantee. Shared-GPU timings must not be used to claim an isolated speed advantage.
-
-## Repository map
-
-```text
-configs/       Frozen method hashes and pinned upstream revisions
-docs/          Setup, protocol, baseline, and reproduction notes
-external/ODSR/ Bundled upstream ODSR model and utility files, with original license
-scripts/       Training, unlearning, controlled MIA, and reproduction entry points
-src/           Native objectives, graph utilities, adapters, and checkpoint code
-tests/         Small deterministic correctness and integration tests
-```
-
-## Attribution and citation
-
-Please acknowledge the original ODSR, EGCL, SCIF, GNNDelete, DA2Unlearn, and CURE4Rec work when using the corresponding components. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Formal paper citation metadata will be added when the title, author list, and publication identifier are finalized; none is invented in this release.
-
-Bundled third-party code retains its original license. A license grant for the newly authored research code has not yet been selected by the authors.
+Regenerate the tables with `python scripts/export_graph_moe_overleaf.py --source artifacts/graph-moe-results.json --output graph-moe-results.tex`.

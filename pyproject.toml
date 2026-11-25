@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "social-recommendation-unlearning"
 version = "0.1.0"
-description = "SoRecRemover: empirical user-edge unlearning for social recommendation"
+description = "GraphMoE SoRecRemover: partition-based user unlearning for social recommendation"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.24", "scipy>=1.10", "torch>=2.2", "scikit-learn>=1.3"]
