@@ -5,7 +5,7 @@ from pathlib import Path
 from statistics import mean, stdev
 
 ROOT = Path(__file__).resolve().parents[1]
-RESULTS = ROOT / 'results/partition_social/epoch30_shards10'
+RESULTS = ROOT / 'results/partition_social/douban_yelp_epoch30_shards10'
 METHODS = {
     'retrain': 'Full retraining',
     'receraser_social': 'RecEraser-social',
@@ -24,7 +24,7 @@ VARIANTS = {
     'no_load_regularizer': 'Without load regularization',
     'no_calibration': 'Fixed secondary mixing',
 }
-DATASETS = {'epinions': 'Epinions', 'yelp2018': 'Yelp2018'}
+DATASETS = {'douban-book': 'Douban-Book', 'yelp2018': 'Yelp2018'}
 GRAPH_MOE = 'sorecremover_graph_moe'
 RANKING = ('recall@20', 'ndcg@20')
 
@@ -53,7 +53,7 @@ def render(report):
     main = report['main']
     parts = [
         r'\section{Partition-Based Unlearning with GraphMoE}',
-        r'We evaluate 1\% user withdrawal on Epinions and Yelp2018 with ODSR and DiffNet++. '
+        r'We evaluate 1\% user withdrawal on Douban-Book and Yelp2018 with ODSR and DiffNet++. '
         r'All partition methods use 10 shards. Each fit uses up to 30 epochs, validation at '
         r'epoch 1 and every two epochs thereafter, and the checkpoint with the best validation '
         r'Recall@20. Full retraining uses a single model. This study measures retained-user '
@@ -88,7 +88,7 @@ def render(report):
                 rows,
             ))
     parts.append(r'\clearpage\subsection{Partitioning and routing ablations}')
-    for backbone, dataset in (('ODSR', 'yelp2018'), ('DiffNet++', 'epinions')):
+    for backbone, dataset in (('ODSR', 'yelp2018'), ('DiffNet++', 'douban-book')):
         cases = [report['ablations'][f'{backbone}/{dataset}/{seed}'] for seed in (42, 43, 44)]
         rows = []
         for variant, label in {'full': 'Full GraphMoE', **VARIANTS}.items():
@@ -115,7 +115,7 @@ def render(report):
         ))
     parts.append(r'\subsection{Shard-count sensitivity}')
     rows = []
-    for backbone, dataset in (('ODSR', 'yelp2018'), ('DiffNet++', 'epinions')):
+    for backbone, dataset in (('ODSR', 'yelp2018'), ('DiffNet++', 'douban-book')):
         case = report['ablations'][f'{backbone}/{dataset}/42']
         for shards, variant in ((10, 'full'), (20, 'shards20'), (50, 'shards50')):
             run = case.get(variant)

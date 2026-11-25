@@ -14,10 +14,10 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 BACKBONES = ('ODSR', 'DiffNet++')
-DATASETS = ('epinions', 'yelp2018')
+DATASETS = ('douban-book', 'yelp2018')
 SEEDS = (42, 43, 44)
 PRIMARY_METHODS = ('retrain', 'sorecremover_partition', 'sorecremover_graph_moe')
-OTHER_METHODS = ('sorecremover_moe', 'receraser_social', 'ultrare_social',
+OTHER_METHODS = ('receraser_social', 'ultrare_social',
                  'grapheraser_social', 'guide_social', 'eemu_partition')
 METHODS = PRIMARY_METHODS + OTHER_METHODS
 EPOCHS = 30
@@ -112,7 +112,7 @@ def worker(args, source):
                                '--epochs', str(EPOCHS), '--validation-every', str(VALIDATION_EVERY),
                                '--shards', str(args.shards), '--methods', method, '--output', str(path)]
                         if args.router_ablations and method == 'sorecremover_graph_moe' and case[:2] in (
-                            ('ODSR', 'yelp2018'), ('DiffNet++', 'epinions')
+                            ('ODSR', 'yelp2018'), ('DiffNet++', 'douban-book')
                         ):
                             cmd.append('--router-ablations')
                         with path.with_suffix('.log').open('a') as log:
@@ -189,7 +189,7 @@ if __name__ == '__main__':
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--runner', type=Path, default=ROOT/'scripts/run_partition_social.py')
     parser.add_argument('--worker')
-    parser.add_argument('--shards', type=int, default=5)
+    parser.add_argument('--shards', type=int, default=10)
     parser.add_argument('--methods', nargs='+', choices=METHODS, default=METHODS)
     parser.add_argument('--retrain-from', type=Path)
     parser.add_argument('--router-ablations', action='store_true')

@@ -5,9 +5,9 @@ import time
 from run_partition_epoch_sweep import ROOT, SEEDS, save
 
 RESULTS = ROOT / 'results/partition_social'
-MAIN = RESULTS / 'epoch30_shards10'
+MAIN = RESULTS / 'douban_yelp_epoch30_shards10'
 ABLATIONS = RESULTS / 'graph_moe_ablation30_shards10'
-PAPER_CASES = (('ODSR', 'yelp2018'), ('DiffNet++', 'epinions'))
+PAPER_CASES = (('ODSR', 'yelp2018'), ('DiffNet++', 'douban-book'))
 METHOD = 'sorecremover_graph_moe'
 
 

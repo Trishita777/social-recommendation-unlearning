@@ -674,10 +674,12 @@ def run(args):
         raise ValueError('Need a nonempty retained graph and at least two valid shards')
     deleted = np.sort(np.random.default_rng(args.seed + 10000).permutation(raw.U)[:n_delete])
     keep = np.setdiff1d(np.arange(raw.U), deleted)
+    dataset_config = {
+        'yelp2018': dict(eps=.54, ssl_reg=.43, dropout=.17),
+        'douban-book': dict(eps=.57, ssl_reg=.58, dropout=.01),
+    }
     cfg = dict(seed=args.seed, lr=.001, emb_size=64, n_layer=3, tau=.2, reg=0.,
-               eps=.46 if args.dataset == 'epinions' else .54,
-               ssl_reg=.18 if args.dataset == 'epinions' else .43,
-               dropout=.14 if args.dataset == 'epinions' else .17, batch_size=2048)
+               batch_size=2048, **dataset_config[args.dataset])
     results = dict(backbone=args.backbone, dataset=args.dataset, seed=args.seed, fraction=args.fraction,
                    shards=args.shards, epochs=args.epochs, aggregation_epochs=args.aggregation_epochs,
                    validation_every=args.validation_every, split_hash=raw.meta['split_hash'],
@@ -829,7 +831,7 @@ def run(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--backbone', choices=['ODSR', 'DiffNet++'], default='ODSR')
-    parser.add_argument('--dataset', choices=['epinions', 'yelp2018'], required=True)
+    parser.add_argument('--dataset', choices=['douban-book', 'yelp2018'], required=True)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--fraction', type=float, default=.01)
